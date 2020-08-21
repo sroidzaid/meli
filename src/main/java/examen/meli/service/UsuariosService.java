@@ -1,6 +1,6 @@
-package Servicios;
+package examen.meli.service;
 
-import Modelo.Usuario;
+import examen.meli.entity.Usuario;
 
 import java.util.List;
 

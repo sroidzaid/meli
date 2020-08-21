@@ -1,6 +1,6 @@
-package Repositorio;
+package examen.meli.repository;
 
-import Modelo.Usuario;
+import examen.meli.entity.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

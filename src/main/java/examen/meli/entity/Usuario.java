@@ -1,8 +1,6 @@
-package Modelo;
+package examen.meli.entity;
 
 import javax.persistence.*;
-import java.io.Serializable;
-import java.util.ArrayList;
 
 @Entity
 @Table(name = "usuario")

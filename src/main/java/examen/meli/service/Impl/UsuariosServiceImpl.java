@@ -1,7 +1,7 @@
-package Servicios.Impl;
-import Modelo.Usuario;
-import Repositorio.UsuarioRepository;
-import Servicios.UsuariosService;
+package examen.meli.service.Impl;
+import examen.meli.entity.Usuario;
+import examen.meli.repository.UsuarioRepository;
+import examen.meli.service.UsuariosService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

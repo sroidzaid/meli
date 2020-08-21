@@ -1,4 +1,4 @@
-package config;
+package examen.meli.config;
 
 
 import org.modelmapper.ModelMapper;
