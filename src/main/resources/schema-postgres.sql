@@ -1,4 +1,4 @@
 
-DROP TABLE IF EXISTS usuario;
-CREATE TABLE usuario(id serial PRIMARY KEY, nombre VARCHAR(255), apellido VARCHAR(255));
-INSERT INTO usuario(nombre, apellido) VALUES('Sebastiannn', 'Roidziaddd');
+DROP TABLE IF EXISTS log;
+CREATE TABLE log(id serial PRIMARY KEY, country VARCHAR(255), distance_km NUMERIC, invocations NUMERIC);
+INSERT INTO log(country, distance_km, invocations) VALUES('Argentina', 1500, 20);

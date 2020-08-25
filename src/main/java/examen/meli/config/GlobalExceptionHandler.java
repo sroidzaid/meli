@@ -1,9 +1,8 @@
 package examen.meli.config;
 
-import examen.meli.exception.EntityAlreadyExistsException;
+import examen.meli.exception.IpInvalidException;
 import examen.meli.exception.EntityCRUDException;
 import examen.meli.exception.EntityNotFoundException;
-import examen.meli.exception.InsufficientBalanceException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,25 +54,14 @@ class GlobalExceptionHandler {
      * @param ex the ex
      * @return the response entity
      */
-    @ExceptionHandler(value = EntityAlreadyExistsException.class)
+    @ExceptionHandler(value = IpInvalidException.class)
     @ResponseBody
-    public ResponseEntity<ErrorInfo> resourceAlreadyExists(EntityAlreadyExistsException ex) {
+    public ResponseEntity<ErrorInfo> resourceAlreadyExists(IpInvalidException ex) {
         ErrorInfo error = new ErrorInfo(String.format("%s %s already exists", ex.getEntityName(), ex.getEntityId()));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
-    /**
-     * Insufficient balance.
-     *
-     * @param ex the ex
-     * @return the response entity
-     */
-    @ExceptionHandler(value = InsufficientBalanceException.class)
-    @ResponseBody
-    public ResponseEntity<ErrorInfo> insufficientBalance(InsufficientBalanceException ex) {
-        ErrorInfo error = new ErrorInfo(String.format("%s", ex.getMessage()));
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
-    }
+
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseBody
