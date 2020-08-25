@@ -35,45 +35,13 @@ class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
-    /**
-     * Resource not found response entity.
-     *
-     * @param ex the ex
-     * @return the response entity
-     */
-    @ExceptionHandler(value = EntityNotFoundException.class)
-    @ResponseBody
-    public ResponseEntity<ErrorInfo> resourceNotFound(EntityNotFoundException ex) {
-        ErrorInfo error = new ErrorInfo(String.format("%s not found: %s", ex.getEntityName(), ex.getEntityId()));
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
-    }
 
-    /**
-     * Resource already exists response entity.
-     *
-     * @param ex the ex
-     * @return the response entity
-     */
     @ExceptionHandler(value = IpInvalidException.class)
     @ResponseBody
-    public ResponseEntity<ErrorInfo> resourceAlreadyExists(IpInvalidException ex) {
-        ErrorInfo error = new ErrorInfo(String.format("%s %s already exists", ex.getEntityName(), ex.getEntityId()));
+    public ResponseEntity<ErrorInfo> ipInvalid(IpInvalidException ex) {
+        ErrorInfo error = new ErrorInfo(String.format("%s %s IP Inválida", ex.getEntityName(), ex.getEntityId()));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
-
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseBody
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    Map<String, String> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
-        });
-        return errors;
-    }
 
 }

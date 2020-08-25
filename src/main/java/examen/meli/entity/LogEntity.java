@@ -14,7 +14,7 @@ public class LogEntity {
     private String country;
 
     @Column(name = "distance")
-    private Long distance;
+    private float distance;
 
     @Column(name = "invocations")
     private Long invocations;
@@ -44,11 +44,11 @@ public class LogEntity {
         this.country = country;
     }
 
-    public Long getDistance() {
+    public float getDistance() {
         return distance;
     }
 
-    public void setDistance(Long distance) {
+    public void setDistance(float distance) {
         this.distance = distance;
     }
 

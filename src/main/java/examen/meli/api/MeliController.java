@@ -2,13 +2,17 @@ package examen.meli.api;
 
 import examen.meli.dto.IpDTO;
 import examen.meli.dto.LogDTO;
+import examen.meli.dto.MinMaxPromDTO;
+import examen.meli.exception.SearchInvalidException;
 import examen.meli.service.IpService;
 import examen.meli.service.LogService;
+import examen.meli.util.ErrorService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,11 +30,40 @@ public class MeliController {
     private ModelMapper modelMapper;
 
 
+
     @GetMapping("/stats")
     List<LogDTO> getLogs() {
         return logService.findAll().stream()
                 .map(log -> modelMapper.map(log, LogDTO.class))
                 .collect(Collectors.toList());
+    }
+
+    // C: Distancia mas cercana
+    // L: Distancia mas lejana
+    // P: Promedio
+    @GetMapping("/stats/{letra}")
+    MinMaxPromDTO getLogMinMaxProm(@PathVariable String letra) {
+
+        MinMaxPromDTO minMaxPromDTO = new MinMaxPromDTO();
+        try{
+            float distancia = logService.findByMinMax(letra);
+            if("C".equals(letra.toUpperCase())){
+                minMaxPromDTO = new MinMaxPromDTO("Distancia mas cercana desde Bs As", distancia);
+            }else if("L".equals(letra.toUpperCase())){
+                minMaxPromDTO = new MinMaxPromDTO("Distancia mas lejana desde Bs As", distancia);
+            }else{
+                minMaxPromDTO = new MinMaxPromDTO("Distancia promedio desde Bs As", distancia);
+            }
+        }catch (SearchInvalidException e){
+            throw new ErrorService(e.getMessage(), "002");
+        }catch (Exception e){
+            throw new ErrorService(e.getMessage(), "001");
+        }
+
+
+        return minMaxPromDTO;
+
+
     }
 
 
