@@ -7,12 +7,12 @@ import examen.meli.exception.SearchInvalidException;
 import examen.meli.service.IpService;
 import examen.meli.service.LogService;
 import examen.meli.util.ErrorService;
+import io.swagger.annotations.ApiOperation;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,7 +30,7 @@ public class MeliController {
     private ModelMapper modelMapper;
 
 
-
+    @ApiOperation(value = "Ver Log")
     @GetMapping("/stats")
     List<LogDTO> getLogs() {
         return logService.findAll().stream()
@@ -41,6 +41,7 @@ public class MeliController {
     // C: Distancia mas cercana
     // L: Distancia mas lejana
     // P: Promedio
+    @ApiOperation(value = "Ver Distancia mínima, máxima, y promedio desde Bs As")
     @GetMapping("/stats/{letra}")
     MinMaxPromDTO getLogMinMaxProm(@PathVariable String letra) {
 
@@ -60,13 +61,11 @@ public class MeliController {
             throw new ErrorService(e.getMessage(), "001");
         }
 
-
         return minMaxPromDTO;
-
 
     }
 
-
+    @ApiOperation(value = "Obtener infomación de IP")
     @PostMapping("/trace")
     IpDTO getIpInformation(@Valid IpDTO ip) {
         return modelMapper.map(ipService.findByIP(ip.getIp()), IpDTO.class);
