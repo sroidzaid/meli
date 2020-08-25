@@ -25,7 +25,23 @@ public class IpServiceImpl implements IpService {
             throw new IpInvalidException(IpEntity.class.getSimpleName(), ip);
         }
 
+        //Consumir Servicios
 
+
+
+        String country = "";
+        Long distance = 213123L;
+
+        LogEntity logEntity = logRepository.findByCountry(country);
+        if(logEntity!=null){
+            long invocaciones = logEntity.getInvocations();
+            invocaciones++;
+            logEntity.setInvocations(invocaciones);
+            logRepository.save(logEntity);
+        }else{
+            LogEntity logAGuardar = new LogEntity(country, distance);
+            logRepository.save(logAGuardar);
+        }
 
 
         return ipInformation;

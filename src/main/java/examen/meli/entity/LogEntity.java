@@ -1,12 +1,9 @@
 package examen.meli.entity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import javax.persistence.*;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-
+@Entity
+@Table(name = "log")
 public class LogEntity {
 
     @Id
@@ -17,10 +14,19 @@ public class LogEntity {
     private String country;
 
     @Column(name = "distance")
-    private String distance;
+    private Long distance;
 
     @Column(name = "invocations")
     private Long invocations;
+
+    public LogEntity(){}
+
+    public LogEntity (String country, Long distance){
+        this.setCountry(country);
+        this.setDistance(distance);
+        this.setInvocations(1L);
+    }
+
 
     public Long getId() {
         return id;
@@ -38,11 +44,11 @@ public class LogEntity {
         this.country = country;
     }
 
-    public String getDistance() {
+    public Long getDistance() {
         return distance;
     }
 
-    public void setDistance(String distance) {
+    public void setDistance(Long distance) {
         this.distance = distance;
     }
 

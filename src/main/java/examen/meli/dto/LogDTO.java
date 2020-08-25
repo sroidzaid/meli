@@ -9,10 +9,10 @@ public class LogDTO {
     private String country;
 
     @JsonProperty("distancia")
-    private String distance;
+    private Long distance;
 
     @JsonProperty("invocaciones")
-    private String invocations;
+    private Long invocations;
 
     public String getCountry() {
         return country;
@@ -22,19 +22,19 @@ public class LogDTO {
         this.country = country;
     }
 
-    public String getDistance() {
+    public Long getDistance() {
         return distance;
     }
 
-    public void setDistance(String distance) {
+    public void setDistance(Long distance) {
         this.distance = distance;
     }
 
-    public String getInvocations() {
+    public Long getInvocations() {
         return invocations;
     }
 
-    public void setInvocations(String invocations) {
+    public void setInvocations(Long invocations) {
         this.invocations = invocations;
     }
 }
