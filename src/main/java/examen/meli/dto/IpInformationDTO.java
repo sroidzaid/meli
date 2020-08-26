@@ -3,15 +3,19 @@ package examen.meli.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class IpDTO {
+public class IpInformationDTO {
 
 
     @JsonProperty("ip")
     private String ip;
 
     @JsonProperty("date")
-    private String date;
+    private Date date;
 
     @JsonProperty("country")
     private String country;
@@ -20,13 +24,13 @@ public class IpDTO {
     private String iso_code;
 
     @JsonProperty("languages")
-    private String languages;
+    private List<String> languages;
 
     @JsonProperty("currency")
     private String currency;
 
     @JsonProperty("times")
-    private String times;
+    private List<String> times;
 
     @JsonProperty("estimated_distance")
     private String estimated_distance;
@@ -41,10 +45,12 @@ public class IpDTO {
     }
 
     public String getDate() {
-        return date;
+        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        String dateString = format.format(date);
+        return dateString;
     }
 
-    public void setDate(String date) {
+    public void setDate(Date date) {
         this.date = date;
     }
 
@@ -64,14 +70,6 @@ public class IpDTO {
         this.iso_code = iso_code;
     }
 
-    public String getLanguages() {
-        return languages;
-    }
-
-    public void setLanguages(String languages) {
-        this.languages = languages;
-    }
-
     public String getCurrency() {
         return currency;
     }
@@ -80,19 +78,27 @@ public class IpDTO {
         this.currency = currency;
     }
 
-    public String getTimes() {
-        return times;
-    }
-
-    public void setTimes(String times) {
-        this.times = times;
-    }
-
     public String getEstimated_distance() {
         return estimated_distance;
     }
 
     public void setEstimated_distance(String estimated_distance) {
         this.estimated_distance = estimated_distance;
+    }
+
+    public List<String> getLanguages() {
+        return languages;
+    }
+
+    public void setLanguages(List<String> languages) {
+        this.languages = languages;
+    }
+
+    public List<String> getTimes() {
+        return times;
+    }
+
+    public void setTimes(List<String> times) {
+        this.times = times;
     }
 }

@@ -1,18 +1,19 @@
-package examen.meli.entity;
+package examen.meli.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Date;
+import java.util.List;
 
-public class IpEntity {
+public class IpInformation {
 
     private String ip;
     private Date date;
     private String country;
     private String iso_code;
-    private String languages;
-    private String currency;
-    private String times;
+    private List<String> languages;
+    private List<String> currency;
+    private List<String> times;
     private Long estimated_distance;
 
     public String getIp() {
@@ -47,27 +48,27 @@ public class IpEntity {
         this.iso_code = iso_code;
     }
 
-    public String getLanguages() {
-        return languages;
-    }
-
-    public void setLanguages(String languages) {
-        this.languages = languages;
-    }
-
-    public String getCurrency() {
+    public List<String> getCurrency() {
         return currency;
     }
 
-    public void setCurrency(String currency) {
+    public void setCurrency(List<String> currency) {
         this.currency = currency;
     }
 
-    public String getTimes() {
+    public List<String> getLanguages() {
+        return languages;
+    }
+
+    public void setLanguages(List<String> languages) {
+        this.languages = languages;
+    }
+
+    public List<String> getTimes() {
         return times;
     }
 
-    public void setTimes(String times) {
+    public void setTimes(List<String> times) {
         this.times = times;
     }
 

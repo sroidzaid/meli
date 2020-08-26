@@ -1,6 +1,6 @@
 package examen.meli.api;
 
-import examen.meli.dto.IpDTO;
+import examen.meli.dto.IpInformationDTO;
 import examen.meli.dto.LogDTO;
 import examen.meli.dto.MinMaxPromDTO;
 import examen.meli.exception.SearchInvalidException;
@@ -67,8 +67,8 @@ public class MeliController {
 
     @ApiOperation(value = "Obtener infomación de IP")
     @PostMapping("/trace")
-    IpDTO getIpInformation(@Valid IpDTO ip) {
-        return modelMapper.map(ipService.findByIP(ip.getIp()), IpDTO.class);
+    IpInformationDTO getIpInformation(@Valid IpInformationDTO ip) {
+        return modelMapper.map(ipService.findByIP(ip.getIp()), IpInformationDTO.class);
     }
 
 }

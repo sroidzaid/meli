@@ -1,10 +1,10 @@
 package examen.meli.service;
 
-import examen.meli.entity.IpEntity;
+import examen.meli.model.IpInformation;
 import org.springframework.stereotype.Service;
 
 @Service
 public interface IpService {
 
-    public IpEntity findByIP(String ip);
+    public IpInformation findByIP(String ip);
 }
