@@ -12,7 +12,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,7 +46,7 @@ public class MeliController {
 
         MinMaxPromDTO minMaxPromDTO = new MinMaxPromDTO();
         try{
-            float distancia = logService.findByMinMax(letra);
+            Double distancia = logService.findByMinMax(letra);
             if("C".equals(letra.toUpperCase())){
                 minMaxPromDTO = new MinMaxPromDTO("Distancia mas cercana desde Bs As", distancia);
             }else if("L".equals(letra.toUpperCase())){

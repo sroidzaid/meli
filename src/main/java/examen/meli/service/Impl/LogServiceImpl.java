@@ -23,9 +23,9 @@ public class LogServiceImpl implements LogService {
 
 
 
-    public float findByMinMax(String letra) throws SearchInvalidException {
+    public Double findByMinMax(String letra) throws SearchInvalidException {
 
-        float distancia;
+        Double distancia;
         switch (letra.toUpperCase()){
             case "C":
                 distancia = logRepository.findMin();

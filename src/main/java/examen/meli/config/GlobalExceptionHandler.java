@@ -1,21 +1,13 @@
 package examen.meli.config;
 
-import examen.meli.exception.IpInvalidException;
 import examen.meli.exception.EntityCRUDException;
-import examen.meli.exception.EntityNotFoundException;
-
+import examen.meli.exception.IpInvalidException;
+import examen.meli.util.ErrorInfo;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import examen.meli.util.ErrorInfo;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @ControllerAdvice
 class GlobalExceptionHandler {

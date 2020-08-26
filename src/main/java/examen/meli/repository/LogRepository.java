@@ -11,11 +11,11 @@ public interface LogRepository extends JpaRepository<LogEntity, Long> {
     LogEntity findByCountry(String country);
 
     @Query(value = "SELECT MIN(distance) FROM log" , nativeQuery = true)
-    float findMin();
+    Double findMin();
 
     @Query(value = "SELECT MAX(distance) FROM log" , nativeQuery = true)
-    float findMax();
+    Double findMax();
 
     @Query(value = "SELECT SUM(distance*invocations)/SUM(invocations) from log" , nativeQuery = true)
-    float findProm();
+    Double findProm();
 }

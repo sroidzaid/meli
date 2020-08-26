@@ -11,7 +11,7 @@ public interface LogService {
 
     public List<LogEntity> findAll();
 
-    public float findByMinMax(String letra) throws SearchInvalidException;
+    public Double findByMinMax(String letra) throws SearchInvalidException;
 
 
 }

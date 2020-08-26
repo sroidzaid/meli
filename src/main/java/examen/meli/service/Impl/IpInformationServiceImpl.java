@@ -1,10 +1,12 @@
 package examen.meli.service.Impl;
 
 import examen.meli.entity.LogEntity;
+import examen.meli.exception.ConexionErrorException;
 import examen.meli.exception.IpInvalidException;
 import examen.meli.model.*;
 import examen.meli.repository.LogRepository;
 import examen.meli.service.IpInformationService;
+import examen.meli.util.URL_APIs;
 import examen.meli.util.Utilities;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,46 +28,49 @@ public class IpInformationServiceImpl implements IpInformationService {
 
         if (Utilities.isIpAdress(ip)) {
 
-            IpInformation ipInformation = new IpInformation();
             RestTemplate restTemplate = new RestTemplate();
-            Country resultCountry = restTemplate.getForObject("https://api.ip2country.info/ip?"+ip, Country.class);
-            CountryInformation resultCountryInformation = restTemplate.getForObject("https://restcountries.eu/rest/v2/alpha/"+resultCountry.getCountryCode()+"?fields=latlng;currencies;languages;timezones;translations;", CountryInformation.class);
-            CurrencyInformation resultCurrencyInformation = restTemplate.getForObject("http://data.fixer.io/api/latest?access_key=7f7ff77e1aa156330036406b6f9d2932", CurrencyInformation.class);
+            try{
+                Country resultCountry = restTemplate.getForObject(URL_APIs.URL_GEO_COUNTRY +ip, Country.class);
+                CountryInformation resultCountryInformation = restTemplate.getForObject(URL_APIs.URL_INFO_COUNTRY +resultCountry.getCountryCode()+"?fields=latlng;currencies;languages;timezones;translations;", CountryInformation.class);
+                CurrencyInformation resultCurrencyInformation = restTemplate.getForObject(URL_APIs.URL_INFO_CURRENCY, CurrencyInformation.class);
 
-            ipInformation.setIp(ip);
-            ipInformation.setDate(new Date());
-            String countryDescSpanish = resultCountryInformation.getTranslations().get("es");
-            ipInformation.setCountry(countryDescSpanish + " ("+resultCountry.getCountryName()+")");
-            ipInformation.setIso_code(resultCountry.getCountryCode());
+                IpInformation ipInformation = new IpInformation();
+                ipInformation.setIp(ip);
+                ipInformation.setDate(new Date());
+                String countryDescSpanish = resultCountryInformation.getTranslations().get("es");
+                ipInformation.setCountry(countryDescSpanish + " ("+resultCountry.getCountryName()+")");
+                ipInformation.setIso_code(resultCountry.getCountryCode());
 
-            List<String> listLanguages = new ArrayList<>();
-            for(Language language : resultCountryInformation.getLanguages()){
-                listLanguages.add(language.getName() + " ("+language.getIso639_1()+")");
+                List<String> listLanguages = new ArrayList<>();
+                for(Language language : resultCountryInformation.getLanguages()){
+                    listLanguages.add(language.getName() + " ("+language.getIso639_1()+")");
+                }
+                ipInformation.setLanguages(listLanguages);
+
+                List<String> listCurrency = new ArrayList<>();
+                for(Currency currency : resultCountryInformation.getCurrencies()){
+                    listCurrency.add(currency.getName() + " (1 "+resultCurrencyInformation.getBase()+" = "+ resultCurrencyInformation.getRates().get(currency.getCode())+" "+currency.getCode() +")");
+                }
+                ipInformation.setCurrency(listCurrency);
+
+                double distanceKM = Utilities.distanceFromBsAs(resultCountryInformation.getLatlng().get(0), resultCountryInformation.getLatlng().get(1));
+                ipInformation.setEstimated_distance(distanceKM);
+
+                LogEntity logEntity = logRepository.findByCountry(countryDescSpanish);
+                if(logEntity!=null){
+                    long invocaciones = logEntity.getInvocations();
+                    invocaciones++;
+                    logEntity.setInvocations(invocaciones);
+                    logRepository.save(logEntity);
+                }else{
+                    LogEntity logAGuardar = new LogEntity(countryDescSpanish, distanceKM);
+                    logRepository.save(logAGuardar);
+                }
+                return ipInformation;
+
+            }catch (Exception e){
+                throw new ConexionErrorException(IpInformation.class.getSimpleName());
             }
-            ipInformation.setLanguages(listLanguages);
-
-            List<String> listCurrency = new ArrayList<>();
-            for(Currency currency : resultCountryInformation.getCurrencies()){
-                listCurrency.add(currency.getName() + " (1 "+currency.getCode()+" = "+ resultCurrencyInformation.getRates().get(currency.getCode())+" "+currency.getCode() +")");
-            }
-            ipInformation.setCurrency(listCurrency);
-
-            double distanceKM = Utilities.distanceFromBsAs(resultCountryInformation.getLatlng().get(0), resultCountryInformation.getLatlng().get(1));
-
-            ipInformation.setEstimated_distance(distanceKM);
-
-            LogEntity logEntity = logRepository.findByCountry(countryDescSpanish);
-            if(logEntity!=null){
-                long invocaciones = logEntity.getInvocations();
-                invocaciones++;
-                logEntity.setInvocations(invocaciones);
-                logRepository.save(logEntity);
-            }else{
-                LogEntity logAGuardar = new LogEntity(countryDescSpanish, distanceKM);
-                logRepository.save(logAGuardar);
-            }
-
-            return ipInformation;
 
         }else{
             throw new IpInvalidException(IpInformation.class.getSimpleName(), ip);
