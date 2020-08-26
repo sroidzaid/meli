@@ -3,16 +3,14 @@ package examen.meli.api;
 import examen.meli.dto.IpInformationDTO;
 import examen.meli.dto.LogDTO;
 import examen.meli.dto.MinMaxPromDTO;
-import examen.meli.exception.ConexionErrorException;
-import examen.meli.exception.IpInvalidException;
-import examen.meli.exception.SearchInvalidException;
+import examen.meli.exception.*;
 import examen.meli.model.IpInformation;
 import examen.meli.service.IpInformationService;
 import examen.meli.service.LogService;
-import examen.meli.util.ErrorService;
 import io.swagger.annotations.ApiOperation;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,18 +24,23 @@ public class MeliController {
     LogService logService;
 
     @Autowired
-    IpInformationService ipService;
+    IpInformationService ipInformationService;
 
     @Autowired
     private ModelMapper modelMapper;
 
-
-    @ApiOperation(value = "Ver Log")
+    @ApiOperation(value = "Ver Log completo de IPs")
     @GetMapping("/stats")
-    List<LogDTO> getLogs() {
-        return logService.findAll().stream()
-                .map(log -> modelMapper.map(log, LogDTO.class))
-                .collect(Collectors.toList());
+    ResponseEntity<?> getLogs() {
+        try{
+            List<LogDTO> listLog = logService.findAll().stream()
+                    .map(log -> modelMapper.map(log, LogDTO.class))
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.ok(listLog);
+        }catch (Exception e){
+            throw new ApiException();
+        }
     }
 
     // C: Distancia mas cercana
@@ -45,7 +48,7 @@ public class MeliController {
     // P: Promedio
     @ApiOperation(value = "Ver Distancia mínima, máxima, y promedio desde Bs As")
     @GetMapping("/stats/{letra}")
-    MinMaxPromDTO getLogMinMaxProm(@PathVariable String letra) {
+    ResponseEntity<?> getLogMinMaxProm(@PathVariable String letra) {
 
         MinMaxPromDTO minMaxPromDTO = new MinMaxPromDTO();
         try{
@@ -57,30 +60,28 @@ public class MeliController {
             }else{
                 minMaxPromDTO = new MinMaxPromDTO("Distancia promedio desde Bs As", distancia);
             }
-        }catch (SearchInvalidException e){
-            throw new ErrorService(e.getMessage(), "002");
-        }catch (Exception e){
-            throw new ErrorService(e.getMessage(), "001");
-        }
+            return ResponseEntity.ok(minMaxPromDTO);
 
-        return minMaxPromDTO;
+        }catch (SearchInvalidException e){
+            throw e;
+        }catch (Exception e){
+            throw new ApiException();
+        }
 
     }
 
-    @ApiOperation(value = "Obtener infomación de IP")
+    @ApiOperation(value = "Obtener infomación relacionada a la IP")
     @PostMapping("/trace")
-    IpInformationDTO getIpInformation(@RequestBody IpInformationDTO ip) {
+    ResponseEntity<?> getIpInformation(@RequestBody IpInformationDTO ip) {
 
         try{
-            IpInformation ipInformation = ipService.findByIP(ip.getIp());
-            return modelMapper.map(ipInformation, IpInformationDTO.class);
-        }catch (ConexionErrorException | IpInvalidException ii){
-            throw new ErrorService(ii.getMessage(), "002");
+            IpInformation ipInformation = ipInformationService.findByIP(ip.getIp());
+            return ResponseEntity.ok(modelMapper.map(ipInformation, IpInformationDTO.class));
+        }catch (DataNotFound | ConexionErrorException | IpInvalidException ii){
+            throw ii;
         }catch (Exception e){
-            throw new ErrorService(e.getMessage(), "001");
+            throw new ApiException();
         }
-
-
 
     }
 

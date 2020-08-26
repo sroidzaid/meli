@@ -1,7 +1,6 @@
 package examen.meli.config;
 
-import examen.meli.exception.EntityCRUDException;
-import examen.meli.exception.IpInvalidException;
+import examen.meli.exception.*;
 import examen.meli.util.ErrorInfo;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,28 +11,41 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @ControllerAdvice
 class GlobalExceptionHandler {
 
-    /**
-     * General crud validation response entity.
-     *
-     * @param ex the ex
-     * @return the response entity
-     */
-    @ExceptionHandler(value = EntityCRUDException.class)
-    @ResponseBody
-    public ResponseEntity<ErrorInfo> generalCRUDValidation(EntityCRUDException ex) {
-        ErrorInfo error = new ErrorInfo(String.format("%s. entity: %s. id: %s", ex.getMessage(),
-                ex.getEntityName(),
-                ex.getEntityId()));
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
-    }
-
-
     @ExceptionHandler(value = IpInvalidException.class)
     @ResponseBody
-    public ResponseEntity<ErrorInfo> ipInvalid(IpInvalidException ex) {
-        ErrorInfo error = new ErrorInfo(String.format("%s %s IP Inválida", ex.getEntityName(), ex.getEntityId()));
+    public ResponseEntity<ErrorInfo> ipIsNotValid(IpInvalidException ex) {
+        ErrorInfo error = new ErrorInfo(HttpStatus.BAD_REQUEST.value(), String.format("%s", ex.getMessage()));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
+
+    @ExceptionHandler(value = SearchInvalidException.class)
+    @ResponseBody
+    public ResponseEntity<ErrorInfo> searchIsNotValid(SearchInvalidException ex) {
+        ErrorInfo error = new ErrorInfo(HttpStatus.BAD_REQUEST.value(), String.format("%s", ex.getMessage()));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(value = ApiException.class)
+    @ResponseBody
+    public ResponseEntity<ErrorInfo> apiError(ApiException ex) {
+        ErrorInfo error = new ErrorInfo(HttpStatus.INTERNAL_SERVER_ERROR.value(), String.format("%s", ex.getMessage()));
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+    }
+
+    @ExceptionHandler(value = ConexionErrorException.class)
+    @ResponseBody
+    public ResponseEntity<ErrorInfo> conexionError(ConexionErrorException ex) {
+        ErrorInfo error = new ErrorInfo(HttpStatus.INTERNAL_SERVER_ERROR.value(), String.format("%s", ex.getMessage()));
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+    }
+
+    @ExceptionHandler(value = DataNotFound.class)
+    @ResponseBody
+    public ResponseEntity<ErrorInfo> dataNotFound(DataNotFound ex) {
+        ErrorInfo error = new ErrorInfo(HttpStatus.INTERNAL_SERVER_ERROR.value(), String.format("%s", ex.getMessage()));
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+    }
+
 
 
 }

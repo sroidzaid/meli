@@ -2,6 +2,7 @@ package examen.meli.service.Impl;
 
 import examen.meli.entity.LogEntity;
 import examen.meli.exception.ConexionErrorException;
+import examen.meli.exception.DataNotFound;
 import examen.meli.exception.IpInvalidException;
 import examen.meli.model.*;
 import examen.meli.repository.LogRepository;
@@ -23,15 +24,17 @@ public class IpInformationServiceImpl implements IpInformationService {
     @Autowired
     private LogRepository logRepository;
 
+    @Autowired
+    private RestTemplate restTemplate;
+
     public IpInformation findByIP(String ip){
 
         if (Utilities.isIpAdress(ip)) {
 
-            RestTemplate restTemplate = new RestTemplate();
             try{
                 Country resultCountry = restTemplate.getForObject(URL_APIs.URL_GEO_COUNTRY +ip, Country.class);
                 if(resultCountry.getCountryCode() == null || resultCountry.getCountryCode().equals("")){
-                    throw new ConexionErrorException(IpInformation.class.getSimpleName());
+                    throw new DataNotFound();
 
                 }else{
                     CountryInformation resultCountryInformation = restTemplate.getForObject(URL_APIs.URL_INFO_COUNTRY +resultCountry.getCountryCode()+"?fields=latlng;currencies;languages;timezones;translations;", CountryInformation.class);
@@ -80,11 +83,11 @@ public class IpInformationServiceImpl implements IpInformationService {
                 }
 
             }catch (Exception e){
-                throw new ConexionErrorException(IpInformation.class.getSimpleName());
+                throw new ConexionErrorException();
             }
 
         }else{
-            throw new IpInvalidException(IpInformation.class.getSimpleName(), ip);
+            throw new IpInvalidException();
         }
 
     }
