@@ -77,7 +77,7 @@ public class MeliController {
         try{
             IpInformation ipInformation = ipInformationService.findByIP(ip.getIp());
             return ResponseEntity.ok(modelMapper.map(ipInformation, IpInformationDTO.class));
-        }catch (DataNotFound | ConexionErrorException | IpInvalidException ii){
+        }catch (DataNotFoundException | ConexionErrorException | IpInvalidException ii){
             throw ii;
         }catch (Exception e){
             throw new ApiException();

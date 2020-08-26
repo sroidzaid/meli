@@ -39,11 +39,11 @@ class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
 
-    @ExceptionHandler(value = DataNotFound.class)
+    @ExceptionHandler(value = DataNotFoundException.class)
     @ResponseBody
-    public ResponseEntity<ErrorInfo> dataNotFound(DataNotFound ex) {
-        ErrorInfo error = new ErrorInfo(HttpStatus.INTERNAL_SERVER_ERROR.value(), String.format("%s", ex.getMessage()));
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+    public ResponseEntity<ErrorInfo> dataNotFound(DataNotFoundException ex) {
+        ErrorInfo error = new ErrorInfo(HttpStatus.BAD_REQUEST.value(), String.format("%s", ex.getMessage()));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
 
