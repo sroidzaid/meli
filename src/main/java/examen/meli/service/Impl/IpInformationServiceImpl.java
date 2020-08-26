@@ -12,9 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 
 @Service
@@ -34,26 +36,37 @@ public class IpInformationServiceImpl implements IpInformationService {
                 CountryInformation resultCountryInformation = restTemplate.getForObject(URL_APIs.URL_INFO_COUNTRY +resultCountry.getCountryCode()+"?fields=latlng;currencies;languages;timezones;translations;", CountryInformation.class);
                 CurrencyInformation resultCurrencyInformation = restTemplate.getForObject(URL_APIs.URL_INFO_CURRENCY, CurrencyInformation.class);
 
-                IpInformation ipInformation = new IpInformation();
-                ipInformation.setIp(ip);
-                ipInformation.setDate(new Date());
-                String countryDescSpanish = resultCountryInformation.getTranslations().get("es");
-                ipInformation.setCountry(countryDescSpanish + " ("+resultCountry.getCountryName()+")");
-                ipInformation.setIso_code(resultCountry.getCountryCode());
-
                 List<String> listLanguages = new ArrayList<>();
                 for(Language language : resultCountryInformation.getLanguages()){
                     listLanguages.add(language.getName() + " ("+language.getIso639_1()+")");
                 }
-                ipInformation.setLanguages(listLanguages);
 
                 List<String> listCurrency = new ArrayList<>();
                 for(Currency currency : resultCountryInformation.getCurrencies()){
                     listCurrency.add(currency.getName() + " (1 "+resultCurrencyInformation.getBase()+" = "+ resultCurrencyInformation.getRates().get(currency.getCode())+" "+currency.getCode() +")");
                 }
-                ipInformation.setCurrency(listCurrency);
 
+                List<String> listTimeZone = new ArrayList<>();
+                SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
+                for(String timeZone : resultCountryInformation.getTimezones()){
+
+                    df.setTimeZone(TimeZone.getTimeZone(timeZone));
+                    String strDate = df.format(new Date());
+                    listTimeZone.add(strDate + " ("+timeZone+")");
+                }
+
+
+                String countryDescSpanish = resultCountryInformation.getTranslations().get("es");
                 double distanceKM = Utilities.distanceFromBsAs(resultCountryInformation.getLatlng().get(0), resultCountryInformation.getLatlng().get(1));
+
+                IpInformation ipInformation = new IpInformation();
+                ipInformation.setIp(ip);
+                ipInformation.setDate(new Date());
+                ipInformation.setCountry(countryDescSpanish + " ("+resultCountry.getCountryName()+")");
+                ipInformation.setIso_code(resultCountry.getCountryCode());
+                ipInformation.setLanguages(listLanguages);
+                ipInformation.setCurrency(listCurrency);
+                ipInformation.setTimes(listTimeZone);
                 ipInformation.setEstimated_distance(distanceKM);
 
                 LogEntity logEntity = logRepository.findByCountry(countryDescSpanish);
