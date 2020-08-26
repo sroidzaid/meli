@@ -3,6 +3,7 @@ package examen.meli.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -33,7 +34,7 @@ public class IpInformationDTO {
     private List<String> times;
 
     @JsonProperty("estimated_distance")
-    private String estimated_distance;
+    private Double estimated_distance;
 
 
     public String getIp() {
@@ -78,14 +79,6 @@ public class IpInformationDTO {
         this.currency = currency;
     }
 
-    public String getEstimated_distance() {
-        return estimated_distance;
-    }
-
-    public void setEstimated_distance(String estimated_distance) {
-        this.estimated_distance = estimated_distance;
-    }
-
     public List<String> getLanguages() {
         return languages;
     }
@@ -100,5 +93,14 @@ public class IpInformationDTO {
 
     public void setTimes(List<String> times) {
         this.times = times;
+    }
+
+    public String getEstimated_distance() {
+        DecimalFormat df = new DecimalFormat("#.00");
+         return df.format(estimated_distance) + " KM";
+    }
+
+    public void setEstimated_distance(Double estimated_distance) {
+        this.estimated_distance = estimated_distance;
     }
 }

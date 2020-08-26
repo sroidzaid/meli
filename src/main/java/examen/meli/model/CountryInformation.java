@@ -5,10 +5,19 @@ import java.util.Map;
 
 public class CountryInformation {
 
+    private List<Double> latlng;
     private List<Currency> currencies;
     private List<Language> languages;
     private List<String> timezones;
     private Map<String, String> translations;
+
+    public List<Double> getLatlng() {
+        return latlng;
+    }
+
+    public void setLatlng(List<Double> latlng) {
+        this.latlng = latlng;
+    }
 
     public List<Currency> getCurrencies() {
         return currencies;

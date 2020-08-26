@@ -4,7 +4,7 @@ import examen.meli.dto.IpInformationDTO;
 import examen.meli.dto.LogDTO;
 import examen.meli.dto.MinMaxPromDTO;
 import examen.meli.exception.SearchInvalidException;
-import examen.meli.service.IpService;
+import examen.meli.service.IpInformationService;
 import examen.meli.service.LogService;
 import examen.meli.util.ErrorService;
 import io.swagger.annotations.ApiOperation;
@@ -24,7 +24,7 @@ public class MeliController {
     LogService logService;
 
     @Autowired
-    IpService ipService;
+    IpInformationService ipService;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -67,7 +67,7 @@ public class MeliController {
 
     @ApiOperation(value = "Obtener infomación de IP")
     @PostMapping("/trace")
-    IpInformationDTO getIpInformation(@Valid IpInformationDTO ip) {
+    IpInformationDTO getIpInformation(@RequestBody IpInformationDTO ip) {
         return modelMapper.map(ipService.findByIP(ip.getIp()), IpInformationDTO.class);
     }
 

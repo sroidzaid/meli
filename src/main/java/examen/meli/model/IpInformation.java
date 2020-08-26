@@ -1,6 +1,5 @@
 package examen.meli.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Date;
 import java.util.List;
@@ -14,7 +13,7 @@ public class IpInformation {
     private List<String> languages;
     private List<String> currency;
     private List<String> times;
-    private Long estimated_distance;
+    private Double estimated_distance;
 
     public String getIp() {
         return ip;
@@ -72,11 +71,11 @@ public class IpInformation {
         this.times = times;
     }
 
-    public Long getEstimated_distance() {
+    public Double getEstimated_distance() {
         return estimated_distance;
     }
 
-    public void setEstimated_distance(Long estimated_distance) {
+    public void setEstimated_distance(Double estimated_distance) {
         this.estimated_distance = estimated_distance;
     }
 }

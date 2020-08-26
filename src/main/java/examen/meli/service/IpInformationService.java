@@ -4,7 +4,7 @@ import examen.meli.model.IpInformation;
 import org.springframework.stereotype.Service;
 
 @Service
-public interface IpService {
+public interface IpInformationService {
 
     public IpInformation findByIP(String ip);
 }

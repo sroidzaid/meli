@@ -8,12 +8,12 @@ public class MinMaxPromDTO {
     private String filtro;
 
     @JsonProperty("distancia")
-    private float distance;
+    private Double distance;
 
 
     public MinMaxPromDTO(){}
 
-    public MinMaxPromDTO (String filtro, float distancia){
+    public MinMaxPromDTO (String filtro, Double distancia){
         this.setFiltro(filtro);
         this.setDistance(distancia);
     }
@@ -32,7 +32,7 @@ public class MinMaxPromDTO {
         return distance + " KM";
     }
 
-    public void setDistance(float distance) {
+    public void setDistance(Double distance) {
         this.distance = distance;
     }
 }
