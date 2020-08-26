@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST,RequestMethod.DELETE})
-@RequestMapping("/meli")
+@RequestMapping("meli")
 public class MeliController {
     @Autowired
     LogService logService;
