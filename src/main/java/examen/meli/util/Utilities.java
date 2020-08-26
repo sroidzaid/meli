@@ -1,5 +1,7 @@
 package examen.meli.util;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -54,5 +56,40 @@ public class Utilities {
     public static double rad2deg(double rad) {
         return (rad * 180.0 / Math.PI);
     }
+
+    // funcion para calcular la hora local en una ciudad dada la diferencia horaria.
+    public static String calcTime(String offset) {
+
+        int hora;
+        int min;
+        if(offset == null || offset.equals("") || offset.equals("UTC")){
+            hora =0;
+            min = 0;
+        }else{
+            String offsetTrim = offset.trim();
+            if (offset.indexOf(":")>0){
+                hora = Integer.valueOf(offsetTrim.substring(3,offsetTrim.indexOf(":")));
+                min = Integer.valueOf(offsetTrim.substring(offsetTrim.indexOf(":")+1,offsetTrim.indexOf(":")+2));
+            }else{
+                hora = Integer.valueOf(offsetTrim.substring(3,offsetTrim.length()));
+                min = 0;
+            }
+        }
+
+        Date d = new Date();
+
+        // lo convierte  a milisegundos y añade la dirferencia horaria
+        // recupera la hora en formato UTC
+        Long utc = d.getTime() + (d.getTimezoneOffset() * 60000);
+
+        // crea un nuevo objeto Date usando la diferencia dada.
+        Date nd = new Date(utc + (3600000*hora)+(60000*min));
+        SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+
+        // devuelve la hora como string.
+        return df.format(nd);
+    }
+
+
 
 }
