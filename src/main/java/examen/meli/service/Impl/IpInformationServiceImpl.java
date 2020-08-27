@@ -1,6 +1,7 @@
 package examen.meli.service.Impl;
 
 import examen.meli.entity.LogEntity;
+import examen.meli.exception.ConexionErrorException;
 import examen.meli.exception.DataNotFoundException;
 import examen.meli.exception.IpInvalidException;
 import examen.meli.model.*;
@@ -10,10 +11,10 @@ import examen.meli.util.URL_APIs;
 import examen.meli.util.Utilities;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 
@@ -81,7 +82,9 @@ public class IpInformationServiceImpl implements IpInformationService {
 
             }catch (DataNotFoundException e){
                 throw e;
-            } catch (Exception ex){
+            }catch (HttpClientErrorException e){
+                throw new ConexionErrorException();
+            }catch (Exception ex){
                 throw ex;
             }
 
