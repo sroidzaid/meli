@@ -8,9 +8,7 @@ import examen.meli.model.IpInformation;
 import examen.meli.service.IpInformationService;
 import examen.meli.service.LogService;
 import examen.meli.util.ErrorInfo;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -37,9 +35,9 @@ public class MeliController {
     @GetMapping(path="/stats", produces = MediaType.APPLICATION_JSON_VALUE )
     @ApiOperation(value = "Ver Log completo de IPs", notes = "Obtener un log completo de las ips consultadas", response = LogDTO[].class)
     @ApiResponses({
-            @ApiResponse(code = 200, message = "Success", response = LogDTO[].class),
-            @ApiResponse(code = 400, message = "Bad request", response = ErrorInfo.class),
-            @ApiResponse(code = 500, message = "Error Server", response = ErrorInfo.class)
+            @ApiResponse(code = 200, message = "Búsqueda exitosa", response = LogDTO[].class),
+            @ApiResponse(code = 400, message = "Búsqueda erronea", response = ErrorInfo.class),
+            @ApiResponse(code = 500, message = "Error inesperado en el server", response = ErrorInfo.class)
     })
     ResponseEntity<?> getLogs() {
         try{
@@ -60,11 +58,11 @@ public class MeliController {
     @GetMapping(path="/stats/{letra}", produces = MediaType.APPLICATION_JSON_VALUE )
     @ApiOperation(value = "Distancia mas cercana, lejana y promedio desde Bs As", notes = "ver distancia mas cercana, lejana y promedio desde Bs As utilizando las letras C,L,P respectivamente", response = MinMaxPromDTO[].class)
     @ApiResponses({
-            @ApiResponse(code = 200, message = "Success", response = MinMaxPromDTO[].class),
-            @ApiResponse(code = 400, message = "Bad request", response = ErrorInfo.class),
-            @ApiResponse(code = 500, message = "Error Server", response = ErrorInfo.class)
+            @ApiResponse(code = 200, message = "Búsqueda exitosa", response = MinMaxPromDTO[].class),
+            @ApiResponse(code = 400, message = "Búsqueda erronea", response = ErrorInfo.class),
+            @ApiResponse(code = 500, message = "Error inesperado en el server", response = ErrorInfo.class)
     })
-    ResponseEntity<?> getLogMinMaxProm(@PathVariable String letra) {
+    ResponseEntity<?> getLogMinMaxProm(@ApiParam(value = "Letra: C,L,P")@PathVariable String letra) {
 
         MinMaxPromDTO minMaxPromDTO = new MinMaxPromDTO();
         try{
@@ -89,11 +87,12 @@ public class MeliController {
     @PostMapping(path="/trace", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Obtener infomación relacionada a la IP", notes = "Dada una ip, obtenemos a que país corresponde y datos asociados al mismo", response = IpInformationDTO.class)
     @ApiResponses({
-            @ApiResponse(code = 200, message = "Success", response = IpInformationDTO.class),
-            @ApiResponse(code = 400, message = "Bad request", response = ErrorInfo.class),
-            @ApiResponse(code = 500, message = "Error Server", response = ErrorInfo.class)
+            @ApiResponse(code = 200, message = "Búsqueda exitosa", response = IpInformationDTO.class),
+            @ApiResponse(code = 400, message = "Búsqueda Erronea", response = ErrorInfo.class),
+            @ApiResponse(code = 500, message = "Error inesperado en el server", response = ErrorInfo.class)
     })
-    ResponseEntity<?> getIpInformation(@RequestBody IpInformationDTO ip) {
+
+    ResponseEntity<?> getIpInformation(@ApiParam(value = "Ejemplo: {\"ip\": \"5.6.7.8\"}") @RequestBody IpInformationDTO ip) {
 
         try{
             IpInformation ipInformation = ipInformationService.findByIP(ip.getIp());
