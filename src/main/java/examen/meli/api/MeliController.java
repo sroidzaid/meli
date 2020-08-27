@@ -62,7 +62,7 @@ public class MeliController {
             @ApiResponse(code = 400, message = "Búsqueda erronea", response = ErrorInfo.class),
             @ApiResponse(code = 500, message = "Error inesperado en el server", response = ErrorInfo.class)
     })
-    ResponseEntity<?> getLogMinMaxProm(@ApiParam(value = "Letra: C,L,P")@PathVariable String letra) {
+    ResponseEntity<?> getLogMinMaxProm(@ApiParam(value = "Letra: C,L,P") @PathVariable String letra) {
 
         MinMaxPromDTO minMaxPromDTO = new MinMaxPromDTO();
         try{
