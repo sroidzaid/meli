@@ -19,7 +19,7 @@ public class SwaggerConfig {
 
     @Bean
     public Docket meliApi() {
-        final String swaggerToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE1OTUwOTg0NDYsInJvbGVzIjpbIlJPTEVfQURNSU4iXSwiaXNzIjoiZnlvcC10b2tlbiIsImlhdCI6MTU5NTA5ODQ0NiwidXNlciI6ImxlYW4ifQ.j117kWjFl_Bw0OBVUEKSQq8UKzoCrtif5YSX0hWv_Nk";
+
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("examen.meli.api"))
@@ -45,9 +45,4 @@ public class SwaggerConfig {
         return apiInfo;
     }
 
-    Parameter authHeader = new ParameterBuilder()
-            .parameterType("header")
-            .name("Authorization")
-            .modelRef(new ModelRef("string"))
-            .build();
 }
