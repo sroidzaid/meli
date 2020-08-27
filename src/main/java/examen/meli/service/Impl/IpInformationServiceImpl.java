@@ -47,7 +47,13 @@ public class IpInformationServiceImpl implements IpInformationService {
 
                     List<String> listCurrency = new ArrayList<>();
                     for(Currency currency : resultCountryInformation.getCurrencies()){
-                        listCurrency.add(currency.getName() + " (1 "+resultCurrencyInformation.getBase()+" = "+ resultCurrencyInformation.getRates().get(currency.getCode())+" "+currency.getCode() +")");
+                        String cotizacion = resultCurrencyInformation.getRates().get(currency.getCode());
+                        if(cotizacion == null || cotizacion.equals("")){
+                            cotizacion = "No disponible";
+                        }else{
+                            cotizacion = cotizacion +" "+ currency.getCode();
+                        }
+                        listCurrency.add(currency.getName() + " (1 "+resultCurrencyInformation.getBase()+" = "+ cotizacion +")");
                     }
 
                     List<String> listTimeZone = new ArrayList<>();

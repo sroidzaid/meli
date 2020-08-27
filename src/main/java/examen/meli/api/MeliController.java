@@ -2,7 +2,7 @@ package examen.meli.api;
 
 import examen.meli.dto.IpInformationDTO;
 import examen.meli.dto.LogDTO;
-import examen.meli.dto.MinMaxPromDTO;
+import examen.meli.dto.StatisticsDTO;
 import examen.meli.exception.*;
 import examen.meli.model.IpInformation;
 import examen.meli.service.IpInformationService;
@@ -32,51 +32,20 @@ public class MeliController {
     private ModelMapper modelMapper;
 
 
+
     @GetMapping(path="/stats", produces = MediaType.APPLICATION_JSON_VALUE )
-    @ApiOperation(value = "Ver Log completo de IPs", notes = "Obtener un log completo de las ips consultadas", response = LogDTO[].class)
+    @ApiOperation(value = "Distancia mas cercana, lejana y promedio desde Bs As", notes = "Obtener distancia en KM mas cercana, lejana y promedio desde donde se consultó una IP", response = StatisticsDTO.class)
     @ApiResponses({
-            @ApiResponse(code = 200, message = "Búsqueda exitosa", response = LogDTO[].class),
-            @ApiResponse(code = 400, message = "Búsqueda erronea", response = ErrorInfo.class),
+            @ApiResponse(code = 200, message = "Búsqueda exitosa", response = StatisticsDTO.class),
             @ApiResponse(code = 500, message = "Error inesperado en el server", response = ErrorInfo.class)
     })
-    ResponseEntity<?> getLogs() {
+    ResponseEntity<?> getLogMinMaxProm() {
+
         try{
-            List<LogDTO> listLog = logService.findAll().stream()
-                    .map(log -> modelMapper.map(log, LogDTO.class))
-                    .collect(Collectors.toList());
+            StatisticsDTO statisticsDTO = logService.findByMinMax();
+            return ResponseEntity.ok(statisticsDTO);
 
-            return ResponseEntity.ok(listLog);
-        }catch (Exception e){
-            throw new ApiException();
-        }
-    }
-
-
-    // C: Distancia mas cercana
-    // L: Distancia mas lejana
-    // P: Promedio
-    @GetMapping(path="/stats/{letra}", produces = MediaType.APPLICATION_JSON_VALUE )
-    @ApiOperation(value = "Distancia mas cercana, lejana y promedio desde Bs As", notes = "ver distancia mas cercana, lejana y promedio desde Bs As utilizando las letras C,L,P respectivamente", response = MinMaxPromDTO[].class)
-    @ApiResponses({
-            @ApiResponse(code = 200, message = "Búsqueda exitosa", response = MinMaxPromDTO[].class),
-            @ApiResponse(code = 400, message = "Búsqueda erronea", response = ErrorInfo.class),
-            @ApiResponse(code = 500, message = "Error inesperado en el server", response = ErrorInfo.class)
-    })
-    ResponseEntity<?> getLogMinMaxProm(@ApiParam(value = "Letra: C,L,P") @PathVariable String letra) {
-
-        MinMaxPromDTO minMaxPromDTO = new MinMaxPromDTO();
-        try{
-            Double distancia = logService.findByMinMax(letra);
-            if("C".equals(letra.toUpperCase())){
-                minMaxPromDTO = new MinMaxPromDTO("Distancia mas cercana desde Bs As", distancia);
-            }else if("L".equals(letra.toUpperCase())){
-                minMaxPromDTO = new MinMaxPromDTO("Distancia mas lejana desde Bs As", distancia);
-            }else{
-                minMaxPromDTO = new MinMaxPromDTO("Distancia promedio desde Bs As", distancia);
-            }
-            return ResponseEntity.ok(minMaxPromDTO);
-
-        }catch (SearchInvalidException e){
+        }catch (ConexionErrorException e){
             throw e;
         }catch (Exception e){
             throw new ApiException();
@@ -103,6 +72,25 @@ public class MeliController {
             throw new ApiException();
         }
 
+    }
+
+    @GetMapping(path="/stats/all", produces = MediaType.APPLICATION_JSON_VALUE )
+    @ApiOperation(value = "Ver Log completo de IPs", notes = "Obtener un log completo de las ips consultadas", response = LogDTO[].class)
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Búsqueda exitosa", response = LogDTO[].class),
+            @ApiResponse(code = 400, message = "Búsqueda erronea", response = ErrorInfo.class),
+            @ApiResponse(code = 500, message = "Error inesperado en el server", response = ErrorInfo.class)
+    })
+    ResponseEntity<?> getLogs() {
+        try{
+            List<LogDTO> listLog = logService.findAll().stream()
+                    .map(log -> modelMapper.map(log, LogDTO.class))
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.ok(listLog);
+        }catch (Exception e){
+            throw new ApiException();
+        }
     }
 
 }

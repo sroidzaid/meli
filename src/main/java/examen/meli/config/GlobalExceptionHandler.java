@@ -18,12 +18,6 @@ class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
-    @ExceptionHandler(value = SearchInvalidException.class)
-    @ResponseBody
-    public ResponseEntity<ErrorInfo> searchIsNotValid(SearchInvalidException ex) {
-        ErrorInfo error = new ErrorInfo(HttpStatus.BAD_REQUEST.value(), String.format("%s", ex.getMessage()));
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
-    }
 
     @ExceptionHandler(value = ApiException.class)
     @ResponseBody

@@ -1,7 +1,8 @@
 package examen.meli.service;
 
+import examen.meli.dto.StatisticsDTO;
 import examen.meli.entity.LogEntity;
-import examen.meli.exception.SearchInvalidException;
+import examen.meli.exception.ConexionErrorException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,8 +11,7 @@ import java.util.List;
 public interface LogService {
 
     public List<LogEntity> findAll();
-
-    public Double findByMinMax(String letra) throws SearchInvalidException;
+    public StatisticsDTO findByMinMax() throws ConexionErrorException;
 
 
 }

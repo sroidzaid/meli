@@ -1,7 +1,8 @@
 package examen.meli.service.Impl;
 
+import examen.meli.dto.StatisticsDTO;
 import examen.meli.entity.LogEntity;
-import examen.meli.exception.SearchInvalidException;
+import examen.meli.exception.ConexionErrorException;
 import examen.meli.repository.LogRepository;
 import examen.meli.service.LogService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,23 +24,18 @@ public class LogServiceImpl implements LogService {
 
 
 
-    public Double findByMinMax(String letra) throws SearchInvalidException {
+    public StatisticsDTO findByMinMax() throws ConexionErrorException {
 
-        Double distancia;
-        switch (letra.toUpperCase()){
-            case "C":
-                distancia = logRepository.findMin();
-                break;
-            case "L":
-                distancia =  logRepository.findMax();
-                break;
-            case "P":
-                distancia =  logRepository.findProm();
-                break;
-            default:
-                throw new SearchInvalidException(letra);
+        try{
+            StatisticsDTO statisticsDTO = new StatisticsDTO();
+            statisticsDTO.setDistance_min(logRepository.findMin());
+            statisticsDTO.setDistance_max(logRepository.findMax());
+            statisticsDTO.setDistance_prom(logRepository.findProm());
+            return statisticsDTO;
+        }catch (Exception e){
+            throw new ConexionErrorException();
         }
-        return distancia;
+
     }
 
 }

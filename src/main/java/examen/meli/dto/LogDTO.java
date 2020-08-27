@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class LogDTO {
 
-
     @JsonProperty("pais")
     private String country;
 
