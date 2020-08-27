@@ -11,7 +11,7 @@
 	<groupId>com.meli</groupId>
 	<artifactId>examen-meli</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 	<name>examen-meli</name>
 	<description>Examen Meli</description>
 
