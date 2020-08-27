@@ -1,7 +1,6 @@
 package examen.meli.service.Impl;
 
 import examen.meli.entity.LogEntity;
-import examen.meli.exception.ConexionErrorException;
 import examen.meli.exception.DataNotFoundException;
 import examen.meli.exception.IpInvalidException;
 import examen.meli.model.*;
@@ -63,17 +62,9 @@ public class IpInformationServiceImpl implements IpInformationService {
                     }
 
                     String countryDescSpanish = resultCountryInformation.getTranslations().get("es");
+                    String countryDesc = countryDescSpanish + " ("+resultCountry.getCountryName()+")";
                     double distanceKM = Utilities.distanceFromBsAs(resultCountryInformation.getLatlng().get(0), resultCountryInformation.getLatlng().get(1));
-
-                    IpInformation ipInformation = new IpInformation();
-                    ipInformation.setIp(ip);
-                    ipInformation.setDate(new Date());
-                    ipInformation.setCountry(countryDescSpanish + " ("+resultCountry.getCountryName()+")");
-                    ipInformation.setIso_code(resultCountry.getCountryCode());
-                    ipInformation.setLanguages(listLanguages);
-                    ipInformation.setCurrency(listCurrency);
-                    ipInformation.setTimes(listTimeZone);
-                    ipInformation.setEstimated_distance(distanceKM);
+                    IpInformation ipInformation = new IpInformation(ip,countryDesc,resultCountry.getCountryCode(),listLanguages,listCurrency,listTimeZone,distanceKM);
 
                     LogEntity logEntity = logRepository.findByCountry(countryDescSpanish);
                     if(logEntity!=null){

@@ -3,32 +3,34 @@ package examen.meli.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.text.DecimalFormat;
+import java.util.List;
 
 public class StatisticsDTO {
-
-    @JsonProperty("distancia_minima")
-    private Double distance_min;
-
-    @JsonProperty("distancia_maxima")
-    private Double distance_max;
 
     @JsonProperty("distancia_promedio")
     private Double distance_prom;
 
-    public String getDistance_min() {
-        return distance_min + " KM";
+    @JsonProperty("list_min")
+    private List<LogDTO> list_min;
+
+    @JsonProperty("list_max")
+    private List<LogDTO> list_max;
+
+
+    public List<LogDTO> getList_min() {
+        return list_min;
     }
 
-    public void setDistance_min(Double distance_min) {
-        this.distance_min = distance_min;
+    public void setList_min(List<LogDTO> list_min) {
+        this.list_min = list_min;
     }
 
-    public String getDistance_max() {
-        return distance_max + " KM";
+    public List<LogDTO> getList_max() {
+        return list_max;
     }
 
-    public void setDistance_max(Double distance_max) {
-        this.distance_max = distance_max;
+    public void setList_max(List<LogDTO> list_max) {
+        this.list_max = list_max;
     }
 
     public String getDistance_prom() {

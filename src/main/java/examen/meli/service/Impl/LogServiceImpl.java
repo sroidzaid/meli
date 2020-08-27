@@ -1,6 +1,5 @@
 package examen.meli.service.Impl;
 
-import examen.meli.dto.StatisticsDTO;
 import examen.meli.entity.LogEntity;
 import examen.meli.exception.ConexionErrorException;
 import examen.meli.repository.LogRepository;
@@ -16,26 +15,44 @@ public class LogServiceImpl implements LogService {
     @Autowired
     private LogRepository logRepository;
 
+
     public List<LogEntity> findAll() {
-
-        List<LogEntity> listLogs = logRepository.findAll();
-        return listLogs;
-    }
-
-
-
-    public StatisticsDTO findByMinMax() throws ConexionErrorException {
-
         try{
-            StatisticsDTO statisticsDTO = new StatisticsDTO();
-            statisticsDTO.setDistance_min(logRepository.findMin());
-            statisticsDTO.setDistance_max(logRepository.findMax());
-            statisticsDTO.setDistance_prom(logRepository.findProm());
-            return statisticsDTO;
+            List<LogEntity> listLogs = logRepository.findAll();
+            return listLogs;
         }catch (Exception e){
             throw new ConexionErrorException();
         }
 
     }
+
+    public List<LogEntity> findMin() {
+        try{
+            List<LogEntity> listLogs = logRepository.findMin();
+            return listLogs;
+    }catch (Exception e){
+        throw new ConexionErrorException();
+    }
+    }
+
+    public List<LogEntity> findMax() {
+        try{
+            List<LogEntity> listLogs = logRepository.findMax();
+            return listLogs;
+    }catch (Exception e){
+            throw new ConexionErrorException();
+        }
+    }
+
+    public Double findProm() {
+        try{
+            Double prom = logRepository.findProm();
+            return prom;
+        }catch (Exception e){
+            throw new ConexionErrorException();
+        }
+    }
+
+
 
 }

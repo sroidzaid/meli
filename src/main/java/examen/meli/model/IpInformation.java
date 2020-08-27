@@ -15,6 +15,20 @@ public class IpInformation {
     private List<String> times;
     private Double estimated_distance;
 
+
+    public IpInformation(String ip,String country,String iso_code,List<String> languages,List<String> currency,List<String> times,Double estimated_distance){
+        this.setIp(ip);
+        this.setDate(new Date());
+        this.setCountry(country);
+        this.setIso_code(iso_code);
+        this.setLanguages(languages);
+        this.setCurrency(currency);
+        this.setTimes(times);
+        this.setEstimated_distance(estimated_distance);
+    }
+
+
+
     public String getIp() {
         return ip;
     }

@@ -3,12 +3,18 @@ package examen.meli.api;
 import examen.meli.dto.IpInformationDTO;
 import examen.meli.dto.LogDTO;
 import examen.meli.dto.StatisticsDTO;
-import examen.meli.exception.*;
+import examen.meli.exception.ApiException;
+import examen.meli.exception.ConexionErrorException;
+import examen.meli.exception.DataNotFoundException;
+import examen.meli.exception.IpInvalidException;
 import examen.meli.model.IpInformation;
 import examen.meli.service.IpInformationService;
 import examen.meli.service.LogService;
 import examen.meli.util.ErrorInfo;
-import io.swagger.annotations.*;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -32,22 +38,32 @@ public class MeliController {
     private ModelMapper modelMapper;
 
 
-
     @GetMapping(path="/stats", produces = MediaType.APPLICATION_JSON_VALUE )
-    @ApiOperation(value = "Distancia mas cercana, lejana y promedio desde Bs As", notes = "Obtener distancia en KM mas cercana, lejana y promedio desde donde se consultó una IP", response = StatisticsDTO.class)
+    @ApiOperation(value = "Distancia mas cercana, lejana y promedio desde Bs As", notes = "Obtener distancia en KM mas cercana, lejana y promedio desde donde se consultó una IP; país y cantidad de invocaciones", response = StatisticsDTO.class)
     @ApiResponses({
             @ApiResponse(code = 200, message = "Búsqueda exitosa", response = StatisticsDTO.class),
             @ApiResponse(code = 500, message = "Error inesperado en el server", response = ErrorInfo.class)
     })
     ResponseEntity<?> getLogMinMaxProm() {
-
         try{
-            StatisticsDTO statisticsDTO = logService.findByMinMax();
-            return ResponseEntity.ok(statisticsDTO);
-
-        }catch (ConexionErrorException e){
+            List<LogDTO> listMin = logService.findMin().stream()
+                    .map(log -> modelMapper.map(log, LogDTO.class))
+                    .collect(Collectors.toList());
+            List<LogDTO> listMax = logService.findMax().stream()
+                    .map(log -> modelMapper.map(log, LogDTO.class))
+                    .collect(Collectors.toList());
+            if(!listMin.isEmpty() && !listMax.isEmpty()){
+                StatisticsDTO statisticsDTO = new StatisticsDTO();
+                statisticsDTO.setList_min(listMin);
+                statisticsDTO.setList_max(listMax);
+                statisticsDTO.setDistance_prom(logService.findProm());
+                return ResponseEntity.ok(statisticsDTO);
+            }else{
+                throw new DataNotFoundException();
+            }
+        } catch (ConexionErrorException | DataNotFoundException e){
             throw e;
-        }catch (Exception e){
+        } catch (Exception e){
             throw new ApiException();
         }
 
@@ -86,7 +102,6 @@ public class MeliController {
             List<LogDTO> listLog = logService.findAll().stream()
                     .map(log -> modelMapper.map(log, LogDTO.class))
                     .collect(Collectors.toList());
-
             return ResponseEntity.ok(listLog);
         }catch (Exception e){
             throw new ApiException();

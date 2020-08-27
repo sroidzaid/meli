@@ -1,6 +1,9 @@
 package examen.meli.config;
 
-import examen.meli.exception.*;
+import examen.meli.exception.ApiException;
+import examen.meli.exception.ConexionErrorException;
+import examen.meli.exception.DataNotFoundException;
+import examen.meli.exception.IpInvalidException;
 import examen.meli.util.ErrorInfo;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
