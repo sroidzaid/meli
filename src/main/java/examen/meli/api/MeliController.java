@@ -17,12 +17,18 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST,RequestMethod.DELETE})
@@ -77,18 +83,27 @@ public class MeliController {
             @ApiResponse(code = 500, message = "Error inesperado en el server", response = ErrorInfo.class)
     })
 
-    ResponseEntity<?> getIpInformation(@ApiParam(value = "Ejemplo: {\"ip\": \"5.6.7.8\"}") @RequestBody IpInformationDTO ip) {
+    public CompletableFuture<ResponseEntity> getIpInformation (@ApiParam(value = "Ejemplo: {\"ip\": \"5.6.7.8\"}") @RequestBody IpInformationDTO ip) {
 
         try{
-            IpInformation ipInformation = ipInformationService.findByIP(ip.getIp());
-            return ResponseEntity.ok(modelMapper.map(ipInformation, IpInformationDTO.class));
+
+            return ipInformationService.findByIP(ip.getIp()).<ResponseEntity>thenApply(ResponseEntity::ok)
+                    .exceptionally(handleGetCarFailure);
+
+
         }catch (DataNotFoundException | ConexionErrorException | IpInvalidException ii){
             throw ii;
         }catch (Exception e){
+            e.printStackTrace();
             throw new ApiException();
         }
 
     }
+
+    private static Function<Throwable, ResponseEntity<? extends IpInformationDTO>> handleGetCarFailure = throwable -> {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    };
+
 
     @GetMapping(path="/stats/all", produces = MediaType.APPLICATION_JSON_VALUE )
     @ApiOperation(value = "Ver Log completo de IPs", notes = "Obtener un log completo de las ips consultadas", response = LogDTO[].class)
@@ -108,5 +123,29 @@ public class MeliController {
         }
     }
 
-}
+
+    @RequestMapping (path="/stats/test", method = RequestMethod.GET, consumes={MediaType.APPLICATION_JSON_VALUE},
+            produces={MediaType.APPLICATION_JSON_VALUE})
+    public @ResponseBody ResponseEntity getAllCars() {
+        try {
+            CompletableFuture<IpInformationDTO> cars1=ipInformationService.findByIP("5.6.7.8");
+            CompletableFuture<IpInformationDTO> cars2=ipInformationService.findByIP("5.6.7.8");
+            CompletableFuture<IpInformationDTO> cars3=ipInformationService.findByIP("5.6.7.8");
+            CompletableFuture<IpInformationDTO> cars4=ipInformationService.findByIP("5.6.7.8");
+            CompletableFuture<IpInformationDTO> cars5=ipInformationService.findByIP("5.6.7.8");
+            CompletableFuture<IpInformationDTO> cars6=ipInformationService.findByIP("5.6.7.8");
+            CompletableFuture<IpInformationDTO> cars7=ipInformationService.findByIP("5.6.7.8");
+            CompletableFuture<IpInformationDTO> cars22=ipInformationService.findByIP("5.6.7.8");
+            CompletableFuture<IpInformationDTO> cars71=ipInformationService.findByIP("5.6.7.8");
+            CompletableFuture<IpInformationDTO> cars12=ipInformationService.findByIP("5.6.7.8");
+            CompletableFuture<IpInformationDTO> cars55=ipInformationService.findByIP("120.6.7.8");
+            CompletableFuture<IpInformationDTO> cars88=ipInformationService.findByIP("5.6.7.8");
+            CompletableFuture.allOf(cars1, cars2, cars3).join();
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } catch(final Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    }
 

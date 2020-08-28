@@ -1,6 +1,8 @@
 package examen.meli.service.Impl;
 
+import examen.meli.dto.IpInformationDTO;
 import examen.meli.entity.LogEntity;
+import examen.meli.exception.ApiException;
 import examen.meli.exception.ConexionErrorException;
 import examen.meli.exception.DataNotFoundException;
 import examen.meli.exception.IpInvalidException;
@@ -9,25 +11,36 @@ import examen.meli.repository.LogRepository;
 import examen.meli.service.IpInformationService;
 import examen.meli.util.URL_APIs;
 import examen.meli.util.Utilities;
+
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Semaphore;
 
 
 @Service
 public class IpInformationServiceImpl implements IpInformationService {
-
+    public static final Semaphore semaphore = new Semaphore(1, false);
     @Autowired
     private LogRepository logRepository;
 
     @Autowired
     private RestTemplate restTemplate;
 
-    public IpInformation findByIP(String ip){
+    @Autowired
+    private ModelMapper modelMapper;
+
+
+    @Async
+    public  CompletableFuture<IpInformationDTO> findByIP(String ip) {
 
         if (Utilities.isIpAdress(ip)) {
 
@@ -67,17 +80,10 @@ public class IpInformationServiceImpl implements IpInformationService {
                     double distanceKM = Utilities.distanceFromBsAs(resultCountryInformation.getLatlng().get(0), resultCountryInformation.getLatlng().get(1));
                     IpInformation ipInformation = new IpInformation(ip,countryDesc,resultCountry.getCountryCode(),listLanguages,listCurrency,listTimeZone,distanceKM);
 
-                    LogEntity logEntity = logRepository.findByCountry(countryDescSpanish);
-                    if(logEntity!=null){
-                        long invocaciones = logEntity.getInvocations();
-                        invocaciones++;
-                        logEntity.setInvocations(invocaciones);
-                        logRepository.save(logEntity);
-                    }else{
-                        LogEntity logAGuardar = new LogEntity(countryDescSpanish, distanceKM);
-                        logRepository.save(logAGuardar);
-                    }
-                    return ipInformation;
+                    guardarLog(countryDescSpanish,distanceKM);
+
+                    IpInformationDTO ipInformationDTO = modelMapper.map(ipInformation,IpInformationDTO.class);
+                    return CompletableFuture.completedFuture(ipInformationDTO);
                 }
 
             }catch (DataNotFoundException e){
@@ -85,7 +91,11 @@ public class IpInformationServiceImpl implements IpInformationService {
             }catch (HttpClientErrorException e){
                 throw new ConexionErrorException();
             }catch (Exception ex){
-                throw ex;
+                try {
+                    throw ex;
+                } catch (InterruptedException e) {
+                    throw new ApiException();
+                }
             }
 
         }else{
@@ -94,5 +104,19 @@ public class IpInformationServiceImpl implements IpInformationService {
 
     }
 
+    private void guardarLog(String countryDescSpanish, Double distanceKM) throws InterruptedException {
 
+        semaphore.acquire();
+        LogEntity logEntity = logRepository.findByCountry(countryDescSpanish);
+        if(logEntity!=null){
+            long invocaciones = logEntity.getInvocations();
+            invocaciones++;
+            logEntity.setInvocations(invocaciones);
+            logRepository.save(logEntity);
+        }else{
+            LogEntity logAGuardar = new LogEntity(countryDescSpanish, distanceKM);
+            logRepository.save(logAGuardar);
+        }
+        semaphore.release();
+    }
 }
