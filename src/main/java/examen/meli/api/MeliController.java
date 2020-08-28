@@ -1,6 +1,7 @@
 package examen.meli.api;
 
 import examen.meli.dto.IpInformationDTO;
+import examen.meli.dto.IpInformationRequestDTO;
 import examen.meli.dto.LogDTO;
 import examen.meli.dto.StatisticsDTO;
 import examen.meli.exception.ApiException;
@@ -64,7 +65,7 @@ public class MeliController {
             @ApiResponse(code = 500, message = "Error inesperado en el server", response = ErrorInfo.class)
     })
 
-    public CompletableFuture<ResponseEntity> getIpInformation (@ApiParam(value = "Ejemplo: {\"ip\": \"5.6.7.8\"}") @RequestBody IpInformationDTO ip) {
+    public CompletableFuture<ResponseEntity> getIpInformation (@ApiParam(value = "Ejemplo: {\"ip\": \"5.6.7.8\"}") @RequestBody IpInformationRequestDTO ip) {
 
         try{
             return ipInformationService.findByIP(ip.getIp()).<ResponseEntity>thenApply(ResponseEntity::ok);
