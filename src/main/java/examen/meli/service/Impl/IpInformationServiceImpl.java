@@ -2,10 +2,7 @@ package examen.meli.service.Impl;
 
 import examen.meli.dto.IpInformationDTO;
 import examen.meli.entity.LogEntity;
-import examen.meli.exception.ApiException;
-import examen.meli.exception.ConexionErrorException;
-import examen.meli.exception.DataNotFoundException;
-import examen.meli.exception.IpInvalidException;
+import examen.meli.exception.*;
 import examen.meli.model.*;
 import examen.meli.repository.LogRepository;
 import examen.meli.service.IpInformationService;
@@ -51,40 +48,45 @@ public class IpInformationServiceImpl implements IpInformationService {
                     CountryInformation resultCountryInformation = restTemplate.getForObject(URL_APIs.URL_INFO_COUNTRY +resultCountry.getCountryCode()+"?fields=latlng;currencies;languages;timezones;translations;", CountryInformation.class);
                     CurrencyInformation resultCurrencyInformation = restTemplate.getForObject(URL_APIs.URL_INFO_CURRENCY, CurrencyInformation.class);
 
-                    List<String> listLanguages = new ArrayList<>();
-                    for(Language language : resultCountryInformation.getLanguages()){
-                        listLanguages.add(language.getName() + " ("+language.getIso639_1()+")");
-                    }
+                    if(!resultCurrencyInformation.isSuccess()){
+                        throw new CurrencyServiceError();
+                    }else{
 
-                    List<String> listCurrency = new ArrayList<>();
-                    for(Currency currency : resultCountryInformation.getCurrencies()){
-                        String cotizacion = resultCurrencyInformation.getRates().get(currency.getCode());
-                        if(cotizacion == null || cotizacion.equals("")){
-                            cotizacion = "No disponible";
-                        }else{
-                            cotizacion = cotizacion +" "+ currency.getCode();
+                        List<String> listLanguages = new ArrayList<>();
+                        for(Language language : resultCountryInformation.getLanguages()){
+                            listLanguages.add(language.getName() + " ("+language.getIso639_1()+")");
                         }
-                        listCurrency.add(currency.getName() + " (1 "+resultCurrencyInformation.getBase()+" = "+ cotizacion +")");
+
+                        List<String> listCurrency = new ArrayList<>();
+                        for(Currency currency : resultCountryInformation.getCurrencies()){
+                            String cotizacion = resultCurrencyInformation.getRates().get(currency.getCode());
+                            if(cotizacion == null || cotizacion.equals("")){
+                                cotizacion = "No disponible";
+                            }else{
+                                cotizacion = cotizacion +" "+ currency.getCode();
+                            }
+                            listCurrency.add(currency.getName() + " (1 "+resultCurrencyInformation.getBase()+" = "+ cotizacion +")");
+                        }
+
+                        List<String> listTimeZone = new ArrayList<>();
+                        for(String timeZone : resultCountryInformation.getTimezones()){
+                            String strDate = Utilities.calcTime(timeZone);
+                            listTimeZone.add(strDate + " ("+timeZone+")");
+                        }
+
+                        String countryDescSpanish = resultCountryInformation.getTranslations().get("es");
+                        String countryDesc = countryDescSpanish + " ("+resultCountry.getCountryName()+")";
+                        double distanceKM = Utilities.distanceFromBsAs(resultCountryInformation.getLatlng().get(0), resultCountryInformation.getLatlng().get(1));
+                        IpInformation ipInformation = new IpInformation(ip,countryDesc,resultCountry.getCountryCode(),listLanguages,listCurrency,listTimeZone,distanceKM);
+
+                        saveLog(countryDescSpanish,distanceKM);
+
+                        IpInformationDTO ipInformationDTO = modelMapper.map(ipInformation,IpInformationDTO.class);
+                        return CompletableFuture.completedFuture(ipInformationDTO);
                     }
-
-                    List<String> listTimeZone = new ArrayList<>();
-                    for(String timeZone : resultCountryInformation.getTimezones()){
-                        String strDate = Utilities.calcTime(timeZone);
-                        listTimeZone.add(strDate + " ("+timeZone+")");
-                    }
-
-                    String countryDescSpanish = resultCountryInformation.getTranslations().get("es");
-                    String countryDesc = countryDescSpanish + " ("+resultCountry.getCountryName()+")";
-                    double distanceKM = Utilities.distanceFromBsAs(resultCountryInformation.getLatlng().get(0), resultCountryInformation.getLatlng().get(1));
-                    IpInformation ipInformation = new IpInformation(ip,countryDesc,resultCountry.getCountryCode(),listLanguages,listCurrency,listTimeZone,distanceKM);
-
-                    saveLog(countryDescSpanish,distanceKM);
-
-                    IpInformationDTO ipInformationDTO = modelMapper.map(ipInformation,IpInformationDTO.class);
-                    return CompletableFuture.completedFuture(ipInformationDTO);
                 }
 
-            }catch (DataNotFoundException e){
+            }catch (CurrencyServiceError | DataNotFoundException e){
                 throw e;
             }catch (HttpClientErrorException e){
                 throw new ConexionErrorException();

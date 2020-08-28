@@ -26,9 +26,9 @@ public class BeanConfiguration {
     @Bean (name = "taskExecutor")
     public Executor taskExecutor() {
         final ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(5);
-        executor.setMaxPoolSize(10);
-        executor.setQueueCapacity(1000);
+        executor.setCorePoolSize(150);
+        executor.setMaxPoolSize(300);
+        executor.setQueueCapacity(3000);
         executor.setThreadNamePrefix("MeliThread-");
         executor.initialize();
         return executor;

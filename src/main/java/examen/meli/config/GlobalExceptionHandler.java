@@ -1,9 +1,6 @@
 package examen.meli.config;
 
-import examen.meli.exception.ApiException;
-import examen.meli.exception.ConexionErrorException;
-import examen.meli.exception.DataNotFoundException;
-import examen.meli.exception.IpInvalidException;
+import examen.meli.exception.*;
 import examen.meli.util.ErrorInfo;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +29,13 @@ class GlobalExceptionHandler {
     @ExceptionHandler(value = ConexionErrorException.class)
     @ResponseBody
     public ResponseEntity<ErrorInfo> conexionError(ConexionErrorException ex) {
+        ErrorInfo error = new ErrorInfo(HttpStatus.INTERNAL_SERVER_ERROR.value(), String.format("%s", ex.getMessage()));
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+    }
+
+    @ExceptionHandler(value = CurrencyServiceError.class)
+    @ResponseBody
+    public ResponseEntity<ErrorInfo> conexionError(CurrencyServiceError ex) {
         ErrorInfo error = new ErrorInfo(HttpStatus.INTERNAL_SERVER_ERROR.value(), String.format("%s", ex.getMessage()));
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
