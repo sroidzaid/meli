@@ -11,12 +11,10 @@ import examen.meli.repository.LogRepository;
 import examen.meli.service.IpInformationService;
 import examen.meli.util.URL_APIs;
 import examen.meli.util.Utilities;
-
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
@@ -80,7 +78,7 @@ public class IpInformationServiceImpl implements IpInformationService {
                     double distanceKM = Utilities.distanceFromBsAs(resultCountryInformation.getLatlng().get(0), resultCountryInformation.getLatlng().get(1));
                     IpInformation ipInformation = new IpInformation(ip,countryDesc,resultCountry.getCountryCode(),listLanguages,listCurrency,listTimeZone,distanceKM);
 
-                    guardarLog(countryDescSpanish,distanceKM);
+                    saveLog(countryDescSpanish,distanceKM);
 
                     IpInformationDTO ipInformationDTO = modelMapper.map(ipInformation,IpInformationDTO.class);
                     return CompletableFuture.completedFuture(ipInformationDTO);
@@ -104,7 +102,7 @@ public class IpInformationServiceImpl implements IpInformationService {
 
     }
 
-    private void guardarLog(String countryDescSpanish, Double distanceKM) throws InterruptedException {
+    private void saveLog(String countryDescSpanish, Double distanceKM) throws InterruptedException {
 
         semaphore.acquire();
         LogEntity logEntity = logRepository.findByCountry(countryDescSpanish);
